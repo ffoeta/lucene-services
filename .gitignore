@@ -1,6 +1,12 @@
 # Compiled class file
 *.class
 
+# index
+.idea
+./index/**
+./logs/**
+**/.mvn/**
+
 # Log file
 *.log
 

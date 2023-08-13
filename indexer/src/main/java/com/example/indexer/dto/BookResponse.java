@@ -3,15 +3,15 @@ package com.example.indexer.dto;
 
 import com.example.runner.model.proto.BaseEntity;
 
-public class SearchResponse implements BaseEntity {
+public class BookResponse implements BaseEntity {
 
   private int count;
 
-  public SearchResponse(int count) {
+  public BookResponse(int count) {
     this.count = count;
   }
 
-  public SearchResponse() {
+  public BookResponse() {
   }
 
   public int getCount() {

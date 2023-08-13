@@ -1,21 +1,28 @@
-package com.example.populator.service;
+package com.example.populator.housekeeper;
 
-import com.example.commons.config.DatasourceSettings;
+import com.example.data.settings.DatasourceSettings;
+import org.flywaydb.core.Flyway;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
-public class PopulatorService {
+@Component
+public class StartupHousekeeper {
 
   DatasourceSettings datasourceSettings;
 
-  public PopulatorService(DatasourceSettings datasourceSettings) {
+  public StartupHousekeeper(DatasourceSettings datasourceSettings) {
     this.datasourceSettings = datasourceSettings;
   }
 
-  public void populate() {
+  @EventListener(ContextRefreshedEvent.class)
+  public void contextRefreshedEvent() {
+    Flyway flyway = Flyway.configure().dataSource(
+        datasourceSettings.getUrl(),
+        datasourceSettings.getUser(),
+        datasourceSettings.getPassword())
+        .load();
 
-//    Flyway flyway = new Flyway();
-//    flyway.setDataSource(dbConfig.getUrl(), dbConfig.getUsername(), dbConfig.getPassword());
-//    flyway.setLocations("classpath:db/scripts");
-//    flyway.clean();
-//    flyway.migrate();
+    flyway.migrate();
   }
 }
