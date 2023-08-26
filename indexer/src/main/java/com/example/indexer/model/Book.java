@@ -4,10 +4,9 @@ import com.example.indexer.model.enums.Genre;
 import com.example.runner.model.proto.BaseEntity;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class Book implements BaseEntity {
-  private UUID id;
+  private Integer id;
 
   private String title;
 
@@ -25,11 +24,11 @@ public class Book implements BaseEntity {
     return "book";
   }
 
-  public UUID getId() {
+  public Integer getId() {
     return id;
   }
 
-  public void setId(UUID id) {
+  public void setId(Integer id) {
     this.id = id;
   }
 
@@ -63,5 +62,17 @@ public class Book implements BaseEntity {
 
   public void setDate(LocalDateTime date) {
     this.date = date;
+  }
+
+  @Override
+  public String toString() {
+    final StringBuffer sb = new StringBuffer("Book{");
+    sb.append("id=").append(id);
+    sb.append(", title='").append(title).append('\'');
+    sb.append(", description='").append(description).append('\'');
+    sb.append(", genre=").append(genre);
+    sb.append(", date=").append(date);
+    sb.append('}');
+    return sb.toString();
   }
 }

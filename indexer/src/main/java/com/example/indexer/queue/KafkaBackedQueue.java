@@ -1,26 +1,31 @@
 package com.example.indexer.queue;
 
-import com.example.indexer.service.KafkaService;
+import com.example.kafka.model.IndexMessage;
+import com.example.kafka.producer.KafkaProducer;
 import com.example.lucene.model.IndexType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 public class KafkaBackedQueue implements AbstractQueue {
+  private static final Logger LOGGER = LoggerFactory.getLogger(KafkaBackedQueue.class);
 
-  private final KafkaService kafkaService;
+  private final KafkaProducer producer;
   private final IndexType indexType;
 
-  public KafkaBackedQueue(IndexType indexType, KafkaService kafkaService) {
+  public KafkaBackedQueue(IndexType indexType, KafkaProducer kafkaProducer) {
     this.indexType = indexType;
-    this.kafkaService = kafkaService;
+    this.producer = kafkaProducer;
   }
 
   @Override
-  public void put(List<UUID> messages) {
-    if (kafkaService != null)
-      kafkaService.sendMessages(indexType, messages.stream().map(UUID::toString).toList());
+  public void put(List<Integer> ids) {
+    for (var id : ids) {
+      producer.send(indexType.name(), IndexMessage.builder().withId(id).build());
+      LOGGER.info("sent {} for {}", id, indexType);
+    }
   }
 
   @Override

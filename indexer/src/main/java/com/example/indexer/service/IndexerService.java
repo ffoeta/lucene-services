@@ -1,37 +1,54 @@
 package com.example.indexer.service;
 
-import com.example.indexer.dao.BookDao;
-import com.example.indexer.dto.IndexDto;
+import com.example.indexer.session.SqlSessionTemplate;
+import com.example.indexer.model.Book;
+import com.example.indexer.model.Author;
+import com.example.indexer.parser.DocParser;
+import com.example.lucene.CustomReader;
+import com.example.lucene.CustomWriter;
 import com.example.lucene.model.IndexType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.UUID;
-
-@Component
 public class IndexerService {
-  private static final Logger log = LoggerFactory.getLogger(IndexerService.class.getName());
+  private static final Logger LOGGER = LoggerFactory.getLogger(IndexerService.class);
 
-  private BookDao bookDao;
+  SqlSessionTemplate sqlSessionTemplate;
 
-  public IndexerService(BookDao bookDao) {
-    this.bookDao = bookDao;
+  public IndexerService(SqlSessionTemplate sqlSessionTemplate) {
+    this.sqlSessionTemplate = sqlSessionTemplate;
   }
 
-  public int indexDocs(IndexDto indexDto) {
-    return indexDocs(indexDto.getIndexType(), indexDto.getIds());
-  }
-
-  public int indexDocs(IndexType indexType, List<UUID> ids) {
-    for (var id: ids) {
-      log.info("INDEXED DOC {} OF TYPE {}", id, indexType);
+  public void index(IndexType indexType, Integer id) {
+    LOGGER.info("got {} for {}", id, indexType);
+    switch (indexType) {
+      case BOOK -> indexBook(id);
+      case AUTHOR -> indexOther(id);
+      default -> throw new RuntimeException();
     }
-    return ids.size();
   }
 
-  public void indexDocs(IndexType indexType, UUID id) {
-      log.info("INDEXED DOC {} OF TYPE {}", id, indexType);
+  private void indexBook(Integer id) {
+    var book = sqlSessionTemplate.getById(Book.class, "book", id);
+    if (book.isEmpty()) {
+      LOGGER.info("no such book in db, id={}!", id);
+      return;
+    }
+    var doc = DocParser.parse(book.get());
+    try (var writer = CustomWriter.buildWriterForIndex(IndexType.BOOK)) {
+      writer.writeDoc(doc);
+    }
+  }
+
+  private void indexOther(Integer id) {
+    var author = sqlSessionTemplate.getById(Author.class, "author", id);
+    if (author.isEmpty()) {
+      LOGGER.info("no such author in db, id={} !", id);
+      return;
+    }
+    var doc = DocParser.parse(author.get());
+    try (var writer = CustomWriter.buildWriterForIndex(IndexType.AUTHOR)) {
+      writer.writeDoc(doc);
+    }
   }
 }

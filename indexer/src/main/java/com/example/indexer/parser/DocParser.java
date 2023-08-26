@@ -1,14 +1,44 @@
 package com.example.indexer.parser;
 
 
+import com.example.indexer.model.Author;
+import com.example.indexer.model.Book;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.KeywordField;
+import org.apache.lucene.document.TextField;
 
 import java.util.Collections;
 import java.util.List;
 
 public class DocParser {
 
-  public List<Document> parse(List<Object> objects) {
-    return Collections.emptyList();
+  public static Document parse(Book book) {
+    var document = new Document();
+
+    var id = new IntField("id", book.getId(), Field.Store.YES);
+    var title = new TextField("title", book.getTitle(), Field.Store.YES);
+    var desc = new TextField("description", book.getDescription(), Field.Store.YES);
+    var genre = new KeywordField("genre", book.getGenre().name(), Field.Store.YES);
+
+    document.add(id);
+    document.add(title);
+    document.add(desc);
+    document.add(genre);
+
+    return document;
+  }
+
+  public static Document parse(Author author) {
+    var document = new Document();
+
+    var id = new IntField("id", author.getId(), Field.Store.YES);
+    var name = new TextField("name", author.getName(), Field.Store.YES);
+
+    document.add(id);
+    document.add(name);
+
+    return document;
   }
 }
