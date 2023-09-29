@@ -1,6 +1,7 @@
-package com.example.indexer.config.kafka;
+package com.example.indexer.config;
 
 import com.example.indexer.service.IndexerService;
+import com.example.kafka.KafkaListenerContainer;
 import com.example.kafka.config.KafkaCommonConfig;
 import com.example.kafka.listener.KafkaListener;
 import com.example.kafka.wrappers.KafkaConsumerFactoryWrapper;
@@ -9,12 +10,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
+
 @Import({
-    KafkaCommonConfig.class
+    KafkaCommonConfig.class,
+    KafkaListenerContainer.class
 })
 @Configuration
-public class KafkaListenerConfig {
-
+public class KafkaConfig {
   @Bean
   public KafkaListener bookListener(KafkaConsumerFactoryWrapper kafkaConsumerFactoryWrapper, IndexerService indexerService) {
     return KafkaListener.Builder
