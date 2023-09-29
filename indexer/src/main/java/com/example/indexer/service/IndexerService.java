@@ -1,10 +1,9 @@
 package com.example.indexer.service;
 
-import com.example.indexer.session.SqlSessionTemplate;
 import com.example.indexer.model.Book;
 import com.example.indexer.model.Author;
 import com.example.indexer.parser.DocParser;
-import com.example.lucene.CustomReader;
+import com.example.indexer.session.SqlSessionTemplate;
 import com.example.lucene.CustomWriter;
 import com.example.lucene.model.IndexType;
 import org.slf4j.Logger;
@@ -19,7 +18,7 @@ public class IndexerService {
     this.sqlSessionTemplate = sqlSessionTemplate;
   }
 
-  public void index(IndexType indexType, Integer id) {
+  public void index(IndexType indexType, Long id) {
     LOGGER.info("got {} for {}", id, indexType);
     switch (indexType) {
       case BOOK -> indexBook(id);
@@ -28,25 +27,25 @@ public class IndexerService {
     }
   }
 
-  private void indexBook(Integer id) {
+  private void indexBook(Long id) {
     var book = sqlSessionTemplate.getById(Book.class, "book", id);
     if (book.isEmpty()) {
       LOGGER.info("no such book in db, id={}!", id);
       return;
     }
-    var doc = DocParser.parse(book.get());
+    var doc = DocParser.parseBook(book.get());
     try (var writer = CustomWriter.buildWriterForIndex(IndexType.BOOK)) {
       writer.writeDoc(doc);
     }
   }
 
-  private void indexOther(Integer id) {
+  private void indexOther(Long id) {
     var author = sqlSessionTemplate.getById(Author.class, "author", id);
     if (author.isEmpty()) {
       LOGGER.info("no such author in db, id={} !", id);
       return;
     }
-    var doc = DocParser.parse(author.get());
+    var doc = DocParser.parseAuthor(author.get());
     try (var writer = CustomWriter.buildWriterForIndex(IndexType.AUTHOR)) {
       writer.writeDoc(doc);
     }

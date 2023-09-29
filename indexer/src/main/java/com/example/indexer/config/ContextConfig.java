@@ -1,10 +1,12 @@
 package com.example.indexer.config;
 
+import com.example.indexer.config.kafka.KafkaConfig;
 import org.springframework.context.annotation.Import;
 
 @Import({
-    CommonConfig.class,
-    QueueConfig.class
+    JettyConfig.class,
+    DataSourceConfig.class,
+    KafkaConfig.class
 })
 public class ContextConfig {
 }

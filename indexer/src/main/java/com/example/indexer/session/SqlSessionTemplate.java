@@ -19,7 +19,7 @@ public class SqlSessionTemplate {
   }
 
   @Transactional
-  public <T> Optional<T> getById(Class<T> tClass, String index, Integer id) {
+  public <T> Optional<T> getById(Class<T> tClass, String index, Long id) {
     var hql = "SELECT * FROM " + index + " WHERE id = " + id;
     try {
        return Optional.of(

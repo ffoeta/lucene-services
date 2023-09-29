@@ -9,12 +9,9 @@ import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.KeywordField;
 import org.apache.lucene.document.TextField;
 
-import java.util.Collections;
-import java.util.List;
-
 public class DocParser {
 
-  public static Document parse(Book book) {
+  public static Document parseBook(Book book) {
     var document = new Document();
 
     var id = new IntField("id", book.getId(), Field.Store.YES);
@@ -30,7 +27,7 @@ public class DocParser {
     return document;
   }
 
-  public static Document parse(Author author) {
+  public static Document parseAuthor(Author author) {
     var document = new Document();
 
     var id = new IntField("id", author.getId(), Field.Store.YES);
